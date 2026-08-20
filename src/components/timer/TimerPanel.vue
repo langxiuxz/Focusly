@@ -10,19 +10,21 @@
     <TimerDial
       :remaining="state.remaining"
       :total="totalSeconds"
-      :phase="state.phase"
-      :mode-label="phaseLabel"
+      :mode="state.mode"
+      :status="state.status"
+      :mode-label="modeLabel"
     />
 
     <TimerControls
-      :running="state.running"
+      :status="state.status"
       @start="start"
       @pause="pause"
+      @resume="resume"
       @reset="reset"
     />
 
     <DurationInput
-      :study="state.studyDuration"
+      :focus="state.focusDuration"
       :rest="state.restDuration"
       @change="setDurations"
     />
@@ -30,13 +32,27 @@
 </template>
 
 <script setup>
-// 计时区容器：组合表盘 / 控制按钮 / 时长输入，数据统一来自 useTimer
+// 计时区容器：组合表盘 / 控制按钮 / 时长输入，数据统一来自 useTimer；卸载时清理定时器
+import { onBeforeUnmount } from 'vue'
 import useTimer from '@/composables/useTimer'
 import TimerDial from './TimerDial.vue'
 import TimerControls from './TimerControls.vue'
 import DurationInput from './DurationInput.vue'
 
-const { state, phaseLabel, totalSeconds, setDurations, start, pause, reset } = useTimer()
+const {
+  state,
+  modeLabel,
+  totalSeconds,
+  setDurations,
+  start,
+  pause,
+  resume,
+  reset,
+  dispose
+} = useTimer()
+
+// 组件卸载时清理定时器，杜绝幽灵 timer / 内存泄漏
+onBeforeUnmount(() => dispose())
 </script>
 
 <style scoped>

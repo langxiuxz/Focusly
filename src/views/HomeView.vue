@@ -15,6 +15,9 @@
 
     <!-- 全局加载遮罩 -->
     <LoadingMask />
+
+    <!-- 全局轻提示（计时结束等提醒） -->
+    <AppToast />
   </div>
 </template>
 
@@ -26,6 +29,7 @@ import TaskPanel from '@/components/task/TaskPanel.vue'
 import ClockPanel from '@/components/clock/ClockPanel.vue'
 import StatsPanel from '@/components/chart/StatsPanel.vue'
 import LoadingMask from '@/components/common/LoadingMask.vue'
+import AppToast from '@/components/common/AppToast.vue'
 </script>
 
 <style scoped>

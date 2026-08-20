@@ -14,21 +14,27 @@ export const STORAGE_KEYS = {
 
 // ---------- 计时器默认值 ----------
 export const TIMER_DEFAULT = {
-  studyDuration: 25, // 默认学习时长（分钟）
+  focusDuration: 25, // 默认专注时长（分钟）
   restDuration: 5 // 默认休息时长（分钟）
 }
 
 // 时长输入范围（与后端 Mock 校验一致）
 export const TIMER_RANGE = {
-  study: { min: 1, max: 180 },
-  rest: { min: 1, max: 60 }
+  focus: { min: 1, max: 180 }, // 专注时长范围（分钟）
+  rest: { min: 1, max: 60 } // 休息时长范围（分钟）
 }
 
-// 计时阶段枚举
-export const TIMER_PHASE = {
+// 计时模式
+export const TIMER_MODE = {
+  FOCUS: 'focus', // 专注
+  REST: 'rest' // 休息
+}
+
+// 计时运行状态（单一状态，避免多个互相冲突的 boolean）
+export const TIMER_STATUS = {
   IDLE: 'idle', // 待开始
-  STUDY: 'study', // 专注中
-  REST: 'rest' // 休息中
+  RUNNING: 'running', // 运行中
+  PAUSED: 'paused' // 已暂停
 }
 
 // ---------- 任务状态 ----------

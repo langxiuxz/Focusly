@@ -1,5 +1,5 @@
 <template>
-  <div class="dial" :class="`dial--${phase}`" role="timer" :aria-label="`剩余 ${display}`">
+  <div class="dial" :class="dialClass" role="timer" :aria-label="`剩余 ${display}`">
     <svg class="dial__svg" viewBox="0 0 200 200" aria-hidden="true">
       <circle class="dial__track" cx="100" cy="100" :r="RADIUS" />
       <circle
@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-// 可视化表盘：SVG 环形进度 + 中央倒计时。环形颜色随阶段（专注/休息）变化
+// 可视化表盘：SVG 环形进度 + 中央倒计时。颜色随模式/状态变化
 import { computed } from 'vue'
 import { formatSeconds } from '@/utils/format'
 
@@ -29,8 +29,9 @@ const circumference = 2 * Math.PI * RADIUS
 
 const props = defineProps({
   remaining: { type: Number, default: 0 }, // 剩余秒数
-  total: { type: Number, default: 1 }, // 当前阶段总秒数
-  phase: { type: String, default: 'idle' }, // idle | study | rest
+  total: { type: Number, default: 1 }, // 当前会话总秒数
+  mode: { type: String, default: 'focus' }, // focus | rest
+  status: { type: String, default: 'idle' }, // idle | running | paused
   modeLabel: { type: String, default: '待开始' } // 专注 / 休息 / 待开始
 })
 
@@ -43,6 +44,13 @@ const progress = computed(() => {
 })
 
 const dashOffset = computed(() => circumference * (1 - progress.value))
+
+// 颜色：休息 → 薄荷；专注待开始 → 灰；专注运行/暂停 → 番茄（默认）
+const dialClass = computed(() => {
+  if (props.mode === 'rest') return 'dial--rest'
+  if (props.status === 'idle') return 'dial--idle'
+  return ''
+})
 </script>
 
 <style scoped>

@@ -16,7 +16,7 @@
     <div class="clock-panel__today">
       <span class="clock-panel__today-label">今日专注</span>
       <span class="clock-panel__today-value">
-        {{ state.todayStudyTime }}<i class="clock-panel__unit">分钟</i>
+        {{ study.todayMinutes }}<i class="clock-panel__unit">分钟</i>
       </span>
     </div>
 
@@ -32,10 +32,13 @@
 <script setup>
 // 打卡区容器：今日状态 + 打卡按钮 + 最近打卡记录，数据统一来自 useClock
 import useClock from '@/composables/useClock'
+import useStudyRecord from '@/composables/useStudyRecord'
 import ClockButton from './ClockButton.vue'
 import ClockCalendar from './ClockCalendar.vue'
 
 const { state, clockIn } = useClock()
+// 今日累计专注时长来自学习记录领域（useStudyRecord），随每次完成专注周期实时刷新
+const { state: study } = useStudyRecord()
 </script>
 
 <style scoped>

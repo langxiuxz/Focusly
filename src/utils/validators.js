@@ -1,18 +1,19 @@
 /**
  * 输入校验工具：前端容错，禁止非法数据录入（与后端 Mock 校验规则一致）。
+ * 使用相对路径导入 constants，便于在 Node 环境无构建直接单测。
  */
-import { TIMER_RANGE, TASK_LIMIT } from '@/constants'
+import { TIMER_RANGE, TASK_LIMIT } from '../constants/index.js'
 
 /**
  * 校验并规范化时长输入
  * @param {*} raw 用户输入（字符串/数字）
- * @param {'study'|'rest'} type 时长类型
+ * @param {'focus'|'rest'} type 时长类型
  * @returns {{ valid: boolean, value: number, message: string }}
  */
 export function validateDuration(raw, type) {
   const range = TIMER_RANGE[type]
-  const label = type === 'study' ? '学习时长' : '休息时长'
-  const fallback = type === 'study' ? 25 : 5
+  const label = type === 'focus' ? '专注时长' : '休息时长'
+  const fallback = type === 'focus' ? 25 : 5
 
   if (raw === '' || raw === null || raw === undefined) {
     return { valid: false, value: fallback, message: `${label}不能为空` }
@@ -21,8 +22,8 @@ export function validateDuration(raw, type) {
   if (Number.isNaN(num) || !Number.isFinite(num)) {
     return { valid: false, value: fallback, message: `${label}必须为数字` }
   }
-  if (num < 0) {
-    return { valid: false, value: fallback, message: `${label}不能为负数` }
+  if (num <= 0) {
+    return { valid: false, value: fallback, message: `${label}必须大于 0` }
   }
   const intVal = Math.floor(num)
   if (intVal < range.min || intVal > range.max) {

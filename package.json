@@ -1,0 +1,21 @@
+{
+  "name": "focusly",
+  "version": "1.0.0",
+  "description": "Focusly 番茄时钟 - 专注学习打卡工具（Vue3 + Composition API + Axios + ECharts）",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "echarts": "^5.5.1",
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.2.1",
+    "vite": "^5.4.11"
+  }
+}

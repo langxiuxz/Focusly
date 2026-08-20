@@ -8,7 +8,7 @@ import { reactive } from 'vue'
 import { STORAGE_KEYS } from '@/constants'
 import { formatDate } from '@/utils/date'
 import { readWithFallback, writeWithFallback } from '@/services/mock/adapter'
-import { getClockList } from '@/services/api/clock'
+import { clockService } from '@/services/api/clock'
 import useStudyRecord from './useStudyRecord'
 import useToast from './useToast'
 
@@ -27,7 +27,7 @@ function syncTodayClocked() {
 
 /** 加载打卡记录 */
 async function loadClocks() {
-  const data = await readWithFallback(getClockList, STORAGE_KEYS.CLOCKS, [])
+  const data = await readWithFallback(clockService.getRecords, STORAGE_KEYS.CLOCKS, [])
   state.records = Array.isArray(data) ? data : []
   syncTodayClocked()
   return state.records

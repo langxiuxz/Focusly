@@ -7,10 +7,10 @@
  * LocalStorage 为真相源；读走 readWithFallback，写走 writeWithFallback（双层数据）。
  */
 import { reactive } from 'vue'
-import { setStorage } from '@/utils/storage'
+import storage from '@/utils/storage'
 import { STORAGE_KEYS, TASK_STATUS } from '@/constants'
 import { readWithFallback, writeWithFallback } from '@/services/mock/adapter'
-import { getTaskList } from '@/services/api/task'
+import { taskService } from '@/services/api/task'
 import useToast from './useToast'
 
 const state = reactive({
@@ -32,7 +32,7 @@ function persist(syncConfig) {
 async function loadTasks() {
   state.loading = true
   try {
-    const data = await readWithFallback(getTaskList, STORAGE_KEYS.TASKS, [])
+    const data = await readWithFallback(taskService.getTasks, STORAGE_KEYS.TASKS, [])
     state.tasks = Array.isArray(data) ? data : []
   } finally {
     state.loading = false
@@ -89,7 +89,7 @@ async function removeTask(id) {
 /** 一键清空任务（无批量删除接口，直接本地清空） */
 async function clearTasks() {
   state.tasks = []
-  setStorage(STORAGE_KEYS.TASKS, [])
+  storage.set(STORAGE_KEYS.TASKS, [])
 }
 
 loadTasks()

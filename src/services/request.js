@@ -24,7 +24,7 @@ export function onLoadingChange(fn) {
 }
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '', // 留空 = 纯本地模式
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/api', // 基础地址 /api（未配置 Mock 时同源 /api）
   timeout: Number(import.meta.env.VITE_API_TIMEOUT) || 3000
 })
 

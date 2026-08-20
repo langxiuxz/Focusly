@@ -3,8 +3,8 @@
 </template>
 
 <script setup>
-// 趋势图：ECharts 柱状图展示近 7/30 天学习时长趋势。
-// Phase 3 完成 ECharts 初始化与生命周期管理；真实数据接入在 Phase 6。
+// 趋势图：近 7 天柱状图 / 近 30 天折线趋势图。
+// 数据变化自动重绘；自适应窗口；卸载时销毁实例；无学习记录时友好提示。
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import * as echarts from 'echarts'
 
@@ -21,11 +21,12 @@ const chartRef = ref(null)
 let chart = null
 
 function buildOption() {
-  // 空数据占位
-  if (!props.data.length) {
+  const hasData = props.data.some((d) => d.studyTime > 0)
+  // 无学习记录：友好提示
+  if (!hasData) {
     return {
       title: {
-        text: '暂无数据，完成打卡后展示趋势',
+        text: '暂无学习记录，完成一次专注后展示趋势',
         left: 'center',
         top: 'middle',
         textStyle: { color: TEXT_SECONDARY, fontSize: 13, fontWeight: 'normal' }
@@ -34,6 +35,7 @@ function buildOption() {
   }
   const labels = props.data.map((d) => d.date.slice(5)) // MM-DD
   const values = props.data.map((d) => d.studyTime)
+  const isMonth = props.range === 'month'
   return {
     grid: { left: 40, right: 16, top: 24, bottom: 30 },
     tooltip: {
@@ -55,13 +57,24 @@ function buildOption() {
       splitLine: { lineStyle: { color: '#f0f2f5' } }
     },
     series: [
-      {
-        name: '专注时长',
-        type: 'bar',
-        data: values,
-        barMaxWidth: 20,
-        itemStyle: { color: BRAND_COLOR, borderRadius: [4, 4, 0, 0] }
-      }
+      isMonth
+        ? {
+            name: '专注时长',
+            type: 'line',
+            smooth: true,
+            symbolSize: 6,
+            data: values,
+            lineStyle: { width: 2, color: BRAND_COLOR },
+            itemStyle: { color: BRAND_COLOR },
+            areaStyle: { color: BRAND_COLOR, opacity: 0.08 }
+          }
+        : {
+            name: '专注时长',
+            type: 'bar',
+            data: values,
+            barMaxWidth: 20,
+            itemStyle: { color: BRAND_COLOR, borderRadius: [4, 4, 0, 0] }
+          }
     ]
   }
 }
@@ -86,7 +99,7 @@ onBeforeUnmount(() => {
   chart = null
 })
 
-// 数据或范围变化时重绘（Phase 6 接入聚合数据后自动刷新）
+// 数据或范围变化时重绘（computed 每次生成新数组，引用变化即触发）
 watch(() => [props.data, props.range], render)
 </script>
 

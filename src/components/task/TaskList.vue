@@ -6,7 +6,7 @@
         :key="task.id"
         :task="task"
         @toggle="$emit('toggle', $event)"
-        @edit="$emit('edit', $event)"
+        @update="$emit('update', $event)"
         @delete="$emit('delete', $event)"
       />
     </ul>
@@ -29,7 +29,7 @@ import TaskItem from './TaskItem.vue'
 defineProps({
   tasks: { type: Array, default: () => [] }
 })
-defineEmits(['toggle', 'edit', 'delete', 'clear'])
+defineEmits(['toggle', 'update', 'delete', 'clear'])
 </script>
 
 <style scoped>

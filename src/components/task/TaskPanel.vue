@@ -12,7 +12,7 @@
     <TaskList
       :tasks="state.tasks"
       @toggle="toggleTask"
-      @edit="editTask"
+      @update="updateTask"
       @delete="removeTask"
       @clear="clearTasks"
     />
@@ -25,12 +25,7 @@ import useTask from '@/composables/useTask'
 import TaskInput from './TaskInput.vue'
 import TaskList from './TaskList.vue'
 
-const { state, addTask, toggleTask, removeTask, clearTasks } = useTask()
-
-// 编辑任务（Phase 4 接入编辑态）
-function editTask(task) {
-  console.log('[TaskPanel] 编辑任务（Phase 4 实现）', task)
-}
+const { state, addTask, toggleTask, updateTask, removeTask, clearTasks } = useTask()
 </script>
 
 <style scoped>

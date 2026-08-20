@@ -1,6 +1,9 @@
 /**
  * 学习记录领域状态（module 级 reactive 单例）。
- * 负责「今日累计专注时长」的记录与持久化，是后续打卡（studyTime）与统计的原始数据源。
+ *
+ * 数据源：每日专注日志 log = [{ date: 'YYYY-MM-DD', minutes }]，date 唯一。
+ * 每次完成专注周期由 recordFocusSession 累加当日分钟数；
+ * 打卡（useClock）与统计（useStats）均从此单一数据源读取，避免重复数据源。
  */
 import { reactive } from 'vue'
 import { getStorage, setStorage } from '@/utils/storage'
@@ -8,24 +11,23 @@ import { STORAGE_KEYS } from '@/constants'
 import { formatDate } from '@/utils/date'
 
 const state = reactive({
-  todayMinutes: 0, // 今日累计专注分钟
-  date: formatDate() // 记录所属日期
+  todayMinutes: 0, // 今日累计专注分钟（派生，便于读取）
+  log: [] // 每日专注日志 [{ date, minutes }]
 })
 
-// 初始化：本地读取；跨天清零
-function init() {
-  const saved = getStorage(STORAGE_KEYS.TODAY_STUDY, null)
+function load() {
+  const saved = getStorage(STORAGE_KEYS.STUDY_LOG, [])
+  state.log = Array.isArray(saved) ? saved : []
+}
+
+function syncToday() {
   const today = formatDate()
-  if (saved && saved.date === today) {
-    state.todayMinutes = saved.minutes
-  } else {
-    state.todayMinutes = 0
-    state.date = today
-  }
+  const entry = state.log.find((e) => e.date === today)
+  state.todayMinutes = entry ? entry.minutes : 0
 }
 
 function persist() {
-  setStorage(STORAGE_KEYS.TODAY_STUDY, { date: state.date, minutes: state.todayMinutes })
+  setStorage(STORAGE_KEYS.STUDY_LOG, state.log)
 }
 
 /**
@@ -34,16 +36,18 @@ function persist() {
  */
 export function recordFocusSession(minutes) {
   const today = formatDate()
-  if (state.date !== today) {
-    // 跨天重置
-    state.date = today
-    state.todayMinutes = 0
+  let entry = state.log.find((e) => e.date === today)
+  if (!entry) {
+    entry = { date: today, minutes: 0 }
+    state.log.push(entry)
   }
-  state.todayMinutes += minutes
+  entry.minutes += minutes
+  state.todayMinutes = entry.minutes
   persist()
 }
 
-init()
+load()
+syncToday()
 
 export default function useStudyRecord() {
   return { state, recordFocusSession }

@@ -11,14 +11,18 @@ import request from '@/services/request'
 import { getStorage, setStorage } from '@/utils/storage'
 import { STORAGE_KEYS } from '@/constants'
 
+// 本地模式（未配置 Mock 地址）：跳过接口、直接读写 LocalStorage，避免无谓的失败请求与控制台告警
+const isLocalMode = !import.meta.env.VITE_API_BASE_URL
+
 /**
- * 读操作：接口优先 + 本地兜底
+ * 读操作：接口优先 + 本地兜底（本地模式下直接读本地）
  * @param {Function} apiFn 接口请求函数
  * @param {string} storageKey 本地缓存 key
  * @param {*} fallback 默认值
  * @returns {Promise<*>} 数据
  */
 export async function readWithFallback(apiFn, storageKey, fallback) {
+  if (isLocalMode) return getStorage(storageKey, fallback)
   try {
     const data = await apiFn()
     setStorage(storageKey, data) // 成功后同步最新数据到本地缓存
@@ -39,6 +43,9 @@ export async function readWithFallback(apiFn, storageKey, fallback) {
 export async function writeWithFallback(storageKey, newData, syncConfig) {
   // 1. 先乐观落本地，保证即时可用、刷新不丢
   setStorage(storageKey, newData)
+
+  // 本地模式：本地即真相源，无需远端同步
+  if (isLocalMode) return newData
 
   // 2. 记录待同步操作
   const pending = getStorage(STORAGE_KEYS.PENDING_SYNC, [])

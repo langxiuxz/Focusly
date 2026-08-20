@@ -9,30 +9,67 @@
     </button>
 
     <div class="task-item__body">
-      <p class="task-item__content">{{ task.content }}</p>
-      <p v-if="task.description" class="task-item__desc">{{ task.description }}</p>
+      <template v-if="editing">
+        <input
+          class="input task-item__edit"
+          v-model="draft"
+          type="text"
+          maxlength="60"
+          @keyup.enter="save"
+          @keyup.esc="cancel"
+        />
+      </template>
+      <template v-else>
+        <p class="task-item__content">{{ task.content }}</p>
+        <p v-if="task.description" class="task-item__desc">{{ task.description }}</p>
+      </template>
     </div>
 
     <div class="task-item__actions">
-      <button class="task-item__btn" @click="$emit('edit', task)">编辑</button>
-      <button class="task-item__btn task-item__btn--danger" @click="$emit('delete', task.id)">
-        删除
-      </button>
+      <template v-if="editing">
+        <button class="task-item__btn" @click="save">保存</button>
+        <button class="task-item__btn" @click="cancel">取消</button>
+      </template>
+      <template v-else>
+        <button class="task-item__btn" @click="startEdit">编辑</button>
+        <button class="task-item__btn task-item__btn--danger" @click="$emit('delete', task.id)">
+          删除
+        </button>
+      </template>
     </div>
   </li>
 </template>
 
 <script setup>
-// 单条任务：状态切换（置灰 + 划线）、编辑、删除
-import { computed } from 'vue'
+// 单条任务：状态切换（置灰 + 划线）、内联编辑、删除
+import { computed, ref } from 'vue'
 import { TASK_STATUS } from '@/constants'
 
 const props = defineProps({
   task: { type: Object, required: true }
 })
-defineEmits(['toggle', 'edit', 'delete'])
+const emit = defineEmits(['toggle', 'update', 'delete'])
 
 const isDone = computed(() => props.task.status === TASK_STATUS.DONE)
+
+const editing = ref(false)
+const draft = ref('')
+
+function startEdit() {
+  draft.value = props.task.content
+  editing.value = true
+}
+
+function save() {
+  const text = draft.value.trim()
+  if (!text) return // 空任务禁止保存
+  emit('update', { id: props.task.id, content: text })
+  editing.value = false
+}
+
+function cancel() {
+  editing.value = false
+}
 </script>
 
 <style scoped>
@@ -99,6 +136,11 @@ const isDone = computed(() => props.task.status === TASK_STATUS.DONE)
 .task-item--done .task-item__content {
   color: var(--color-text-light);
   text-decoration: line-through;
+}
+
+.task-item__edit {
+  padding: 6px 10px;
+  font-size: var(--text-md);
 }
 
 .task-item__actions {

@@ -8,7 +8,7 @@ export const STORAGE_KEYS = {
   TIMER_CONFIG: 'focusly:timerConfig', // 计时器配置
   TASKS: 'focusly:tasks', // 学习任务列表
   CLOCKS: 'focusly:clocks', // 打卡记录列表
-  TODAY_STUDY: 'focusly:todayStudyTime', // 今日累计专注时长（分钟）
+  STUDY_LOG: 'focusly:studyLog', // 每日专注时长日志（[{ date, minutes }]，date 唯一）
   PENDING_SYNC: 'focusly:pendingSync' // 待同步操作队列
 }
 

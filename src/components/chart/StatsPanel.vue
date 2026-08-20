@@ -23,18 +23,18 @@
       </div>
     </div>
 
-    <StatsSummary :summary="state.summary" />
-    <TrendChart :data="state.trend" :range="state.range" />
+    <StatsSummary :summary="summary" :clocked="todayClocked" />
+    <TrendChart :data="trend" :range="state.range" />
   </section>
 </template>
 
 <script setup>
-// 统计看板容器：汇总卡片 + 趋势图，数据统一来自 useStats
+// 统计看板容器：汇总卡片 + 趋势图，数据统一来自 useStats（computed 自动更新）
 import useStats from '@/composables/useStats'
 import StatsSummary from './StatsSummary.vue'
 import TrendChart from './TrendChart.vue'
 
-const { state, setRange } = useStats()
+const { state, summary, trend, todayClocked, setRange } = useStats()
 </script>
 
 <style scoped>

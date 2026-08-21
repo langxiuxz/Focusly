@@ -3,6 +3,9 @@
 轻量化单页 Web 应用，集 **番茄专注计时、学习任务管理、每日学习打卡、学习数据可视化统计** 于一体。
 ## 自评一句话
 关于各功能的实现最完善，对各功能都进行了多方测试，如对番茄钟进行长时间运行、非法时间输入等测试。
+![alt text](image.png)
+![alt text](image-1.png)
+![alt text](image-2.png)
 ## 技术栈
 
 - Vue 3（Composition API）
